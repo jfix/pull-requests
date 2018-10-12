@@ -13,7 +13,6 @@ const ghGot = require('gh-got')
     5. create a pull request via POST
        https://developer.github.com/v3/pulls/#create-a-pull-request
 */
-const baseUrl = 'repos/jfix/production/'
 const updateBody = {
   message: 'Add another funny line',
   committer: {
@@ -34,21 +33,21 @@ const prBody = { 'body': {
 ;
 (async () => {
   try {
-    const { body } = await ghGot(`${baseUrl}contents/test.json?ref=suggestion`, {token: process.env.GITHUB_TOKEN})
+    const { body } = await ghGot(`${process.env.BASE_URL}contents/test.json?ref=suggestion`, {token: process.env.GITHUB_TOKEN})
     const fileSha = body.sha
     const content = Buffer.from(body.content, 'base64').toString()
     // remove potential trailing comma so that JSON parser doesn't vomit
     const arr = JSON.parse(content.replace(/,(?!\s*?[{["'\w])/g, ''))
     arr.push(`new line ${arr.length} !!!`)
 
-    await ghGot.put(`${baseUrl}contents/test.json`, {
+    await ghGot.put(`${process.env.BASE_URL}contents/test.json`, {
       body: {
         ...updateBody,
         content: Buffer.from(JSON.stringify(arr, {}, 2) + '\n').toString('base64'),
         sha: fileSha
       }
     })
-    await ghGot.post(`${baseUrl}pulls`, prBody)
+    await ghGot.post(`${process.env.BASE_URL}pulls`, prBody)
   } catch (error) {
     console.log(error.response.body)
   }
