@@ -1,0 +1,23 @@
+{
+  "name": "production",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfix/production.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jfix/production/issues"
+  },
+  "homepage": "https://github.com/jfix/production#readme",
+  "dependencies": {
+    "dotenv": "6.0.0",
+    "gh-got": "8.0.1"
+  }
+}
