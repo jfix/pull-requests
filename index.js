@@ -2,25 +2,27 @@ const path = require('path')
 require('dotenv').config({path: path.resolve(process.cwd(), '_env')})
 const ghGot = require('gh-got')
 
-// how this is going to work ...
 /*
-    1. commit a new change https://developer.github.com/v3/git/#introducing-the-git-database-api
-      a. get current file sha with ghGot('repos/jfix/production/contents/test.json', ...)
-      b. get commit sha
-      c. get tree sha
-      --
-      b. get blob with ghGot('repos/jfix/production/git/blobs/c9da69b01d4f778097fe400ff5d80c27fd782ca7'
-      c. parse blob, add new line to array
-      d. commit blob
-
-    2. create a pull request
+  how this is going to work ...
+    1. GET file from suggestion branch
+       https://developer.github.com/v3/repos/contents/#get-contents
+    2. read file content from response
+    3. add line to file
+    4. update remote file content via PUT
+       https://developer.github.com/v3/repos/contents/#update-a-file
+    5. create a pull request via POST
+       https://developer.github.com/v3/pulls/#create-a-pull-request
 */
 const baseUrl = 'repos/jfix/production/'
 const updateBody = {
-  'message': 'Add another funny line',
-  'committer': {
-    'name': 'Abot Somewhere',
-    'email': 'abot@somewhere.com'
+  message: 'Add another funny line',
+  committer: {
+    name: 'Abot Somewhere',
+    email: 'abot@somewhere.com'
+  },
+  author: {
+    name: 'The author',
+    email: 'author@somewhere.else'
   },
   'branch': 'suggestion'
 }
@@ -38,6 +40,7 @@ const prBody = { 'body': {
     // remove potential trailing comma so that JSON parser doesn't vomit
     const arr = JSON.parse(content.replace(/,(?!\s*?[{["'\w])/g, ''))
     arr.push(`new line ${arr.length} !!!`)
+
     await ghGot.put(`${baseUrl}contents/test.json`, {
       body: {
         ...updateBody,
