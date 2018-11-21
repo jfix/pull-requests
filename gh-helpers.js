@@ -5,6 +5,8 @@ const ghGot = require('gh-got')
     getFile
     putJsonFile
     createPullRequest
+    createBranch
+    deleteBranch
 
   They correspond to the following workflow:
   
@@ -65,4 +67,47 @@ const createPullRequest = async (args) => {
   }
 }
 
-module.exports = { getFile, putJsonFile, createPullRequest }
+const createBranch = async (args) => {
+  const { owner, repository, branch } = args
+  try {
+    await deleteBranch(args)
+
+    const masterSha = await getBranchSha({...args, branch: 'master'})
+
+    const { statusCode } = await ghGot.post(`repos/${owner}/${repository}/git/refs`, { body: {
+        ref: `refs/heads/${branch}`,
+        sha: masterSha
+      }
+    })
+    if (statusCode === 201) {
+      return true
+    }
+    throw Error('Branch not created')
+  } catch (error) {
+    console.error(`createBranch: ${error}`)
+  }
+}
+
+const deleteBranch = async (args) => {
+  const { owner, repository, branch } = args
+  try {
+    const { statusCode } = await ghGot.delete(`repos/${owner}/${repository}/git/refs/heads/${branch}`)
+    if (statusCode === 204) {
+      return true
+    }
+    throw Error('Branch not deleted')
+  } catch (error) {
+    console.error(`deleteBranch: ${error}`)
+  }
+}
+
+const getBranchSha = async (args) => {
+  const { owner, repository, branch } = args
+  try {
+    const res = await ghGot(`repos/${owner}/${repository}/git/refs/heads/${branch}`)
+    return res.body.object.sha
+  } catch (error) {
+
+  }
+}
+module.exports = { getFile, putJsonFile, createPullRequest, createBranch, deleteBranch }

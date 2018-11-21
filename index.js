@@ -1,6 +1,6 @@
 const path = require('path')
 require('dotenv').config({path: path.resolve(process.cwd(), '_env')})
-const { getFile, putJsonFile, createPullRequest } = require('./gh-helpers')
+const { getFile, putJsonFile, createPullRequest, createBranch } = require('./gh-helpers')
 
 const config = {
     token: process.env.GITHUB_TOKEN, // -- exposing token via process.env.GITHUB_TOKEN will ghGot automatically apply it
