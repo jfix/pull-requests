@@ -15,9 +15,7 @@ const config = {
     branch: 'suggestion',
     })
 
-    // CUSTOM STUFF - UPDATE CONTENTS or whatever
-    // const oldContent = Buffer.from(fileContents, 'base64').toString()
-    // const jsonArray = JSON.parse(oldContent.replace(/,(?!\s*?[{["'\w])/g, ''))
+    // change JSON before committing it
     json.push(`a random line added. index: ${json.length}`)
 
     const r = await putJsonFile({
