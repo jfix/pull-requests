@@ -6,18 +6,20 @@ const config = {
     token: process.env.GITHUB_TOKEN, // -- exposing token via process.env.GITHUB_TOKEN will ghGot automatically apply it
     owner: 'jfix',
     repository: 'production',
-    filePath: 'test.json'
+    filePath: 'test.json',
+    branch: 'suggestion'
 };
 
 (async () => {
-    const { json, fileSha } = await getFile({...config, branch: 'suggestion'})
+    await createBranch({...config})
+    
+    const { json, fileSha } = await getFile({...config})
 
     // change JSON before committing it
     json.push(`a random line added. index: ${json.length}`)
 
     await putJsonFile({
         ...config,
-        branch: 'suggestion',
         fileSha,
         jsonFileContents: json,
         commitInfo: {
@@ -39,7 +41,7 @@ const config = {
         pullRequestBody: {
             title: 'A great line',
             body: 'Please have a look and approve!',
-            head: 'suggestion',
+            head: config.branch,
             base: 'master'   
         }
     })
