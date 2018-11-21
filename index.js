@@ -1,54 +1,51 @@
 const path = require('path')
 require('dotenv').config({path: path.resolve(process.cwd(), '_env')})
-const ghGot = require('gh-got')
+const { getFile, putJsonFile, createPullRequest } = require('./gh-helpers')
 
-/*
-  how this is going to work ...
-    1. GET file from suggestion branch
-       https://developer.github.com/v3/repos/contents/#get-contents
-    2. read file content from response
-    3. add line to file
-    4. update remote file content via PUT
-       https://developer.github.com/v3/repos/contents/#update-a-file
-    5. create a pull request via POST
-       https://developer.github.com/v3/pulls/#create-a-pull-request
-*/
-const updateBody = {
-  message: 'Add another funny line',
-  committer: {
-    name: 'Abot Somewhere',
-    email: 'abot@somewhere.com'
-  },
-  author: {
-    name: 'The author',
-    email: 'author@somewhere.else'
-  },
-  'branch': 'suggestion'
-}
-const prBody = { 'body': {
-  title: 'A great line',
-  body: 'Please have a look and approve!',
-  head: 'suggestion',
-  base: 'master' } }
-;
+const config = {
+    token: process.env.GITHUB_TOKEN, // -- exposing token via process.env.GITHUB_TOKEN will ghGot automatically apply it
+    owner: 'jfix',
+    repository: 'production',
+    filePath: 'test.json'
+};
+
 (async () => {
-  try {
-    const { body } = await ghGot(`${process.env.BASE_URL}contents/test.json?ref=suggestion`, {token: process.env.GITHUB_TOKEN})
-    const fileSha = body.sha
-    const content = Buffer.from(body.content, 'base64').toString()
-    // remove potential trailing comma so that JSON parser doesn't vomit
-    const arr = JSON.parse(content.replace(/,(?!\s*?[{["'\w])/g, ''))
-    arr.push(`new line ${arr.length} !!!`)
-
-    await ghGot.put(`${process.env.BASE_URL}contents/test.json`, {
-      body: {
-        ...updateBody,
-        content: Buffer.from(JSON.stringify(arr, {}, 2) + '\n').toString('base64'),
-        sha: fileSha
-      }
+    const { json, fileSha } = await getFile({
+    ...config,
+    branch: 'suggestion',
     })
-    await ghGot.post(`${process.env.BASE_URL}pulls`, prBody)
-  } catch (error) {
-    console.log(error.response.body)
-  }
+
+    // CUSTOM STUFF - UPDATE CONTENTS or whatever
+    // const oldContent = Buffer.from(fileContents, 'base64').toString()
+    // const jsonArray = JSON.parse(oldContent.replace(/,(?!\s*?[{["'\w])/g, ''))
+    json.push(`a random line added. index: ${json.length}`)
+
+    const r = await putJsonFile({
+        ...config,
+        branch: 'suggestion',
+        fileSha,
+        jsonFileContents: json,
+        commitInfo: {
+            message: 'Add another funny line',
+            committer: {
+                name: 'Abot Somewhere',
+                email: 'abot@somewhere.com'
+            },
+            author: {
+                name: 'The author',
+                email: 'author@somewhere.else'
+            },
+            'branch': 'suggestion'
+        }
+    })
+
+    const p = await createPullRequest({
+        ...config,
+        pullRequestBody: {
+            title: 'A great line',
+            body: 'Please have a look and approve!',
+            head: 'suggestion',
+            base: 'master'   
+        }
+    })
 })()
