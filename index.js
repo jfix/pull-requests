@@ -15,7 +15,7 @@ const config = {
     // change JSON before committing it
     json.push(`a random line added. index: ${json.length}`)
 
-    const r = await putJsonFile({
+    await putJsonFile({
         ...config,
         branch: 'suggestion',
         fileSha,
@@ -34,7 +34,7 @@ const config = {
         }
     })
 
-    const p = await createPullRequest({
+    await createPullRequest({
         ...config,
         pullRequestBody: {
             title: 'A great line',
