@@ -10,10 +10,7 @@ const config = {
 };
 
 (async () => {
-    const { json, fileSha } = await getFile({
-    ...config,
-    branch: 'suggestion',
-    })
+    const { json, fileSha } = await getFile({...config, branch: 'suggestion'})
 
     // change JSON before committing it
     json.push(`a random line added. index: ${json.length}`)
