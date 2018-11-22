@@ -7,7 +7,7 @@ const config = {
     owner: 'jfix',
     repository: 'production',
     filePath: 'test.json',
-    branch: 'suggestion'
+    branch: `suggestion-${(new Date()).getTime()}` // create a new branch for each suggestion
 };
 
 (async () => {
@@ -32,7 +32,7 @@ const config = {
                 name: 'The author',
                 email: 'author@somewhere.else'
             },
-            'branch': 'suggestion'
+            'branch': config.branch
         }
     })
 
