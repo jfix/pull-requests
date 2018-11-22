@@ -71,17 +71,14 @@ const createPullRequest = async (args) => {
 const createBranch = async (args) => {
   const { owner, repository, branch } = args
   try {
-    await deleteBranch(args)
-
     const masterSha = await getBranchSha({...args, branch: 'master'})
-
     const { statusCode } = await ghGot.post(`repos/${owner}/${repository}/git/refs`, { body: {
         ref: `refs/heads/${branch}`,
         sha: masterSha
       }
     })
     if (statusCode === 201) {
-      return true
+      return branch
     }
     throw Error('Branch not created')
   } catch (error) {
