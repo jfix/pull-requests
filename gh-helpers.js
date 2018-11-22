@@ -60,7 +60,8 @@ const putJsonFile = async (args) => {
 const createPullRequest = async (args) => {
   const { owner, repository, pullRequestBody } = args
   try {
-    await ghGot.post(`repos/${owner}/${repository}/pulls`, { body: pullRequestBody})
+    const response = await ghGot.post(`repos/${owner}/${repository}/pulls`, { body: pullRequestBody})
+    return response.body.html_url
   } catch (error) {
     const info = error.response.body.errors[0].message
     console.error(`createPullRequest: ${info}`)
