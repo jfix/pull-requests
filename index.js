@@ -36,7 +36,7 @@ const config = {
         }
     })
 
-    await createPullRequest({
+    const url = await createPullRequest({
         ...config,
         pullRequestBody: {
             title: 'A great line',
@@ -45,4 +45,5 @@ const config = {
             base: 'master'   
         }
     })
+    console.log(`PR: ${url}`)
 })()
