@@ -108,4 +108,10 @@ const getBranchSha = async (args) => {
 
   }
 }
-module.exports = { getFile, putJsonFile, createPullRequest, createBranch, deleteBranch }
+module.exports = { 
+  getFile, 
+  putJsonFile, 
+  createPullRequest, 
+  createBranch, 
+  deleteBranch 
+}
