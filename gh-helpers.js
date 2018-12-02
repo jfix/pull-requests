@@ -20,7 +20,7 @@ const ghGot = require('gh-got')
         https://developer.github.com/v3/pulls/#create-a-pull-request
 */
 
-/* get a file from a GitHub repository */
+/* Get a file from a GitHub repository */
 const getFile = async (args) => {
   const { owner, repository, branch, filePath } = args
   try {
@@ -38,7 +38,7 @@ const getFile = async (args) => {
   }
 }
 
-/* commit a file to a GitHub repository */
+/* Commit a file to a GitHub repository */
 const putJsonFile = async (args) => {
   const { owner, repository, filePath, fileSha: sha, jsonFileContents, commitInfo } = args
   const content = Buffer.from(JSON.stringify(jsonFileContents, {}, 2) + '\n').toString('base64')
@@ -56,7 +56,7 @@ const putJsonFile = async (args) => {
   }
 }
 
-/* create a pull request for a given repository */
+/* Create a pull request for a given repository */
 const createPullRequest = async (args) => {
   const { owner, repository, pullRequestBody } = args
   try {
@@ -68,6 +68,7 @@ const createPullRequest = async (args) => {
   }
 }
 
+/* Create a named branch */
 const createBranch = async (args) => {
   const { owner, repository, branch } = args
   try {
@@ -85,7 +86,7 @@ const createBranch = async (args) => {
     console.error(`createBranch: ${error}`)
   }
 }
-
+/* Delete a named branch */
 const deleteBranch = async (args) => {
   const { owner, repository, branch } = args
   try {
@@ -98,7 +99,7 @@ const deleteBranch = async (args) => {
     console.error(`deleteBranch: ${error}`)
   }
 }
-
+/* Get the SHA for a given branch */
 const getBranchSha = async (args) => {
   const { owner, repository, branch } = args
   try {
