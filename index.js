@@ -2,14 +2,16 @@ const path = require('path')
 require('dotenv').config({path: path.resolve(process.cwd(), '_env')})
 const { getFile, putJsonFile, createPullRequest, createBranch } = require('./gh-helpers')
 
+// PAYLOAD PREPARATION
 const config = {
     token: process.env.GITHUB_TOKEN, // -- exposing token via process.env.GITHUB_TOKEN will ghGot automatically apply it
-    owner: 'jfix',
-    repository: 'production',
-    filePath: 'test.json',
+    owner: process.env.GITHUB_OWNER,
+    repository: process.env.GITHUB_REPO,
+    filePath: 'assets/js/cent-raisons.js',
     branch: `suggestion-${(new Date()).getTime()}` // create a new branch for each suggestion
 };
 
+// ACTUALLY GO AHEAD AND DO STUFF
 (async () => {
     await createBranch({...config})
     
